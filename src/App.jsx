@@ -4,8 +4,7 @@ import './App.css'
 import authService from './appwrite/auth'
 import { useDispatch } from 'react-redux'
 import { login, logout } from './store/authSlice'
-import Header from './components/Header/HEADER.JSX'
-import Footer from './components/Footer/Footer'
+import { Header,Footer } from './components'
 
 function App () {
   const [loading, setLoading] = useState(true)
