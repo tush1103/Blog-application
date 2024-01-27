@@ -40,7 +40,6 @@ export class AuthService {
     }
   }
 
-  //to check if user is currently logged in or in what state it is
   async getCurrentUSer () {
     try {
       return await this.account.get()
