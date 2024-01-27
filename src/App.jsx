@@ -22,7 +22,7 @@ function App () {
         }
       })
       .finally(setLoading(false))
-  }, [])
+  }, [dispatch])
   return !loading ? <div className='min-h-screen flex flex-wrap context-between bg-gray-400'>
     <div className='w-full block'>
       <Header/>
