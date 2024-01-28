@@ -1,16 +1,14 @@
-/* eslint-disable no-unused-vars */
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import appwriteService from '../appwrite/config'
 import { login as authLogin } from '../store/authSlice'
 import { Button, Input, Logo } from './index'
-import { UseDispatch, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import authService from '../appwrite/auth'
 import { useForm } from 'react-hook-form'
 
 function Login () {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { register, handleSubmit } = useForm()
   const [error, setError] = useState('')
 
@@ -19,17 +17,15 @@ function Login () {
     try {
       const session = await authService.login(data)
       if (session) {
-        const userData = await authService.getCurrentUSer()
-        if (userData) {
-          dispatch(authLogin(userData))
-        }
-        //login hone ke baad home page pr bhejdo user ko
+        const userData = await authService.getCurrentUser()
+        if (userData) dispatch(authLogin(userData))
         navigate('/')
       }
     } catch (error) {
       setError(error.message)
     }
   }
+
   return (
     <div className='flex items-center justify-center w-full'>
       <div

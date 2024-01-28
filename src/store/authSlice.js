@@ -15,7 +15,7 @@ const authSlice=createSlice({
             state.status=true //now this user is authenticated
             state.userData=action.payload.userData
         },
-        logout:(state,action)=>{
+        logout:(state)=>{
             state.status=false;
             state.userData=null;
         }

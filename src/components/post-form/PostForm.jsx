@@ -1,18 +1,17 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-import { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Input, Select, RTE } from '../index'
+import { Button, Input, RTE, Select } from '..'
 import appwriteService from '../../appwrite/config'
 import { useNavigate } from 'react-router-dom'
-import { UseSelector, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
-function PostForm ({ post }) {
+export default function PostForm ({ post }) {
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || '',
-        slug: post?.slug || '',
+        slug: post?.$id || '',
         content: post?.content || '',
         status: post?.status || 'active'
       }
@@ -24,25 +23,23 @@ function PostForm ({ post }) {
   const submit = async data => {
     if (post) {
       const file = data.image[0]
-        ? appwriteService.fileUpload(data.image[0])
+        ? await appwriteService.uploadFile(data.image[0])
         : null
-      //deleting old picture
+
       if (file) {
-        appwriteService.fileDelete(post.featuredImage)
+        appwriteService.deleteFile(post.featuredImage)
       }
-      //updating our post with new picture
+
       const dbPost = await appwriteService.updatePost(post.$id, {
         ...data,
         featuredImage: file ? file.$id : undefined
       })
+
       if (dbPost) {
         navigate(`/post/${dbPost.$id}`)
       }
-    }
-
-    //if you dont have the post
-    else {
-      const file = await appwriteService.fileUpload(data.image[0])
+    } else {
+      const file = await appwriteService.uploadFile(data.image[0])
 
       if (file) {
         const fileId = file.$id
@@ -51,6 +48,7 @@ function PostForm ({ post }) {
           ...data,
           userId: userData.$id
         })
+
         if (dbPost) {
           navigate(`/post/${dbPost.$id}`)
         }
@@ -59,28 +57,28 @@ function PostForm ({ post }) {
   }
 
   const slugTransform = useCallback(value => {
-    if (value && typeof value === 'string') {
+    if (value && typeof value === 'string')
       return value
         .trim()
         .toLowerCase()
-        .replace(/^[a-zA-Z\d]+/g, '-')
-    }
+        .replace(/[^a-zA-Z\d\s]+/g, '-')
+        .replace(/\s/g, '-')
+
     return ''
   }, [])
 
-  useEffect(() => {
-    const subscribtion = watch((value, { name }) => {
+  React.useEffect(() => {
+    const subscription = watch((value, { name }) => {
       if (name === 'title') {
-        setValue('slug', slugTransform(value.title, { shouldValidate: true }))
+        setValue('slug', slugTransform(value.title), { shouldValidate: true })
       }
     })
-    return () => {
-      subscribtion.unsubscribe()
-    }
+
+    return () => subscription.unsubscribe()
   }, [watch, slugTransform, setValue])
+
   return (
     <form onSubmit={handleSubmit(submit)} className='flex flex-wrap'>
-      {' '}
       <div className='w-2/3 px-2'>
         <Input
           label='Title :'

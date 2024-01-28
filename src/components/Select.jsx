@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
-import { useId ,React} from 'react'
-function Select ({ options, label, className = '', ...props }, ref) {
+import React, { useId } from 'react'
+
+function Select ({ options, label, className, ...props }, ref) {
   const id = useId()
   return (
     <div className='w-full'>
